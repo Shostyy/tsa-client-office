@@ -1,0 +1,16 @@
+{
+  "Themes": {
+    "Light": "Світла",
+    "Dark": "Темна",
+    "System": "Системна"
+  },
+  "Auth": {
+    "Slogan": "Ми завжди поруч з нашими клієнтами"
+  },
+  "welcome": "Welcome",
+  "hello": "Привіт",
+  "changeLanguage": "Change Language",
+  "home": "Home",
+  "about": "About",
+  "contact": "Contact"
+}
