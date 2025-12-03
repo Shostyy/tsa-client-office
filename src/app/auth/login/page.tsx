@@ -1,54 +1,109 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import Link from "next/link";
-import { Eye, EyeOff } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Eye, EyeOff, AlertCircle } from "lucide-react";
+import { useLogin } from "@/api/hooks";
+import { AxiosError } from "axios";
+import { useTranslation } from "react-i18next";
+
+type LoginFormData = {
+  username: string;
+  password: string;
+};
 
 export default function LoginPage() {
-  const emailInputRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
+  const usernameInputRef = useRef<HTMLInputElement>(null);
+  const { t, i18n } = useTranslation();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    clearErrors,
+  } = useForm<LoginFormData>();
+
   const [showPassword, setShowPassword] = useState(false);
+  const { mutate: login, isPending, isError, error } = useLogin();
 
   useEffect(() => {
-    emailInputRef.current?.focus();
+    usernameInputRef.current?.focus();
   }, []);
+
+  useEffect(() => {
+    clearErrors();
+  }, [i18n.language, clearErrors]);
+
+  const onSubmit = (data: LoginFormData) => {
+    login(data, {
+      onSuccess: () => {
+        router.push("/dashboard");
+      },
+    });
+  };
+
+  const is401Error = isError && (error as AxiosError)?.response?.status === 401;
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="space-y-2 text-center">
-        <h1 className="text-3xl font-bold tracking-tight text-white">Вхід</h1>
-        <p className="text-sm text-white/80">
-          Введіть свої дані для входу в систему
-        </p>
+        <h1 className="text-3xl font-bold tracking-tight text-white">
+          {t("Auth.Authorization")}
+        </h1>
+        <p className="text-sm text-white/80">{t("Auth.EnterYourData")}</p>
       </div>
 
-      {/* Form */}
-      <div className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <div className="min-h-[60px]">
+          {isError && (
+            <Alert
+              variant="destructive"
+              className="bg-red-500/20 border-red-500/50 text-white"
+            >
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                {is401Error
+                  ? t("Auth.IncorrectUserNameOrPasswordTitle")
+                  : t("Auth.GeneralError")}
+              </AlertDescription>
+            </Alert>
+          )}
+        </div>
+
         <div className="space-y-2">
-          <Label htmlFor="email" className="text-white">
-            Email
+          <Label htmlFor="username" className="text-white">
+            {t("Auth.Login")}
           </Label>
           <Input
-            ref={emailInputRef}
-            id="email"
-            type="email"
-            placeholder="name@example.com"
-            required
+            id="username"
+            type="text"
+            {...register("username", {
+              required: t("Auth.UsernameIsRequired"),
+            })}
             className="border-white/30 bg-white/20 text-white placeholder:text-white/60 focus:border-white/50"
           />
+          {errors.username && (
+            <p className="text-sm text-red-400">{errors.username.message}</p>
+          )}
         </div>
 
         <div className="space-y-2">
           <Label htmlFor="password" className="text-white">
-            Пароль
+            {t("Auth.Password")}
           </Label>
           <div className="relative">
             <Input
               id="password"
               type={showPassword ? "text" : "password"}
-              required
+              {...register("password", {
+                required: t("Auth.PasswordIsRequired"),
+              })}
               className="border-white/30 bg-white/20 pr-10 text-white placeholder:text-white/60 focus:border-white/50"
             />
             <Button
@@ -66,25 +121,29 @@ export default function LoginPage() {
               )}
             </Button>
           </div>
+          {errors.password && (
+            <p className="text-sm text-red-400">{errors.password.message}</p>
+          )}
         </div>
 
         <Button
           type="submit"
-          className="w-full bg-white text-gray-900 hover:bg-white/90"
+          disabled={isPending}
+          className="w-full bg-white text-gray-900 hover:bg-white/90 disabled:opacity-50"
           size="lg"
         >
-          Увійти
+          {isPending ? t("Auth.Entering") : t("Auth.Enter")}
         </Button>
 
         <div className="text-center">
           <Link
-            href="/login/forgot-password"
+            href="/auth/forgot-password"
             className="text-sm text-white hover:underline"
           >
-            Забули пароль?
+            {t("Auth.ForgotPassword")}
           </Link>
         </div>
-      </div>
+      </form>
     </div>
   );
 }

@@ -14,7 +14,6 @@ export default function AuthLayout({
 
   return (
     <div className="relative flex min-h-screen w-full flex-col overflow-hidden lg:flex-row">
-      {/* Light theme background */}
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat blur-sm dark:hidden"
         style={{
@@ -22,7 +21,6 @@ export default function AuthLayout({
         }}
       />
 
-      {/* Dark theme background */}
       <div
         className="absolute inset-0 hidden bg-cover bg-center bg-no-repeat blur-sm dark:block"
         style={{
@@ -30,40 +28,41 @@ export default function AuthLayout({
         }}
       />
 
-      {/* Overlay */}
       <div className="absolute inset-0 bg-black/20 dark:bg-black/40" />
 
-      {/* Mobile logo - top */}
       <div className="relative z-10 flex justify-center pt-8 lg:hidden">
         <div className="relative h-16 w-40">
           <Image
             src="/logo/logo-dark.svg"
             alt="Logo"
-            fill
+            width={232}
+            height={81}
             className="object-contain dark:hidden"
           />
           <Image
             src="/logo/logo-light.svg"
             alt="Logo"
-            fill
+            width={232}
+            height={81}
             className="hidden object-contain dark:block"
           />
         </div>
       </div>
 
-      {/* Left side - branding (desktop only) */}
       <div className="relative z-10 hidden w-[60%] flex-col justify-between p-12 lg:flex xl:p-16">
         <div className="relative h-24 w-48 xl:h-28 xl:w-56">
           <Image
             src="/logo/logo-dark.svg"
             alt="Logo"
-            fill
+            width={232}
+            height={81}
             className="object-contain dark:hidden"
           />
           <Image
             src="/logo/logo-light.svg"
             alt="Logo"
-            fill
+            width={232}
+            height={81}
             className="hidden object-contain dark:block"
           />
         </div>
