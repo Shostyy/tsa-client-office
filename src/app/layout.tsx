@@ -6,6 +6,8 @@ import {
   QueryProvider,
   ThemeProvider,
 } from "@/components/providers";
+import { Toaster } from "react-hot-toast";
+import AuthProvider from "@/components/providers/auth-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,9 +41,28 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <I18nProvider>
-            <QueryProvider>{children}</QueryProvider>
+            <QueryProvider>
+              <AuthProvider>{children}</AuthProvider>
+            </QueryProvider>
           </I18nProvider>
         </ThemeProvider>
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            duration: 5000,
+            style: {
+              background: "var(--background)",
+              color: "var(--foreground)",
+              border: "1px solid var(--border)",
+            },
+            success: {
+              iconTheme: {
+                primary: "var(--primary)",
+                secondary: "var(--primary-foreground)",
+              },
+            },
+          }}
+        />
       </body>
     </html>
   );

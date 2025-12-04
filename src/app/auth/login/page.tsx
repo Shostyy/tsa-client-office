@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff, AlertCircle } from "lucide-react";
 import { useLogin } from "@/api/hooks";
 import { AxiosError } from "axios";
@@ -19,6 +19,7 @@ type LoginFormData = {
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const usernameInputRef = useRef<HTMLInputElement>(null);
   const { t, i18n } = useTranslation();
 
@@ -43,7 +44,13 @@ export default function LoginPage() {
   const onSubmit = (data: LoginFormData) => {
     login(data, {
       onSuccess: () => {
-        router.push("/dashboard");
+        const returnUrl = searchParams?.get("returnUrl");
+
+        if (returnUrl && returnUrl !== "/") {
+          router.push(returnUrl);
+        } else {
+          router.push("/dashboard");
+        }
       },
     });
   };

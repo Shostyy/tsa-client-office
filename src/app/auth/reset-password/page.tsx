@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Button } from "@/components/ui/button";
@@ -30,7 +30,6 @@ export default function ResetPasswordPage() {
   const token = searchParams.get("token");
   const { t } = useTranslation();
 
-  const passwordInputRef = useRef<HTMLInputElement>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -38,6 +37,7 @@ export default function ResetPasswordPage() {
     register,
     handleSubmit,
     watch,
+    setFocus,
     formState: { errors },
   } = useForm<ResetPasswordFormData>({
     resolver: yupResolver(resetPasswordValidationSchema),
@@ -58,8 +58,8 @@ export default function ResetPasswordPage() {
     passwordConfirmation && password === passwordConfirmation;
 
   useEffect(() => {
-    passwordInputRef.current?.focus();
-  }, []);
+    setFocus("password");
+  }, [setFocus]);
 
   useEffect(() => {
     if (!token) {
@@ -131,7 +131,6 @@ export default function ResetPasswordPage() {
               id="password"
               type={showPassword ? "text" : "password"}
               {...register("password")}
-              ref={passwordInputRef}
               className="border-white/30 bg-white/20 pr-10 text-white placeholder:text-white/60 focus:border-white/50"
               disabled={isSuccess}
             />
@@ -153,7 +152,7 @@ export default function ResetPasswordPage() {
               )}
             </Button>
           </div>
-          <div className="min-h-[20px]">
+          <div className="min-h-5">
             {errors.password && (
               <p className="text-sm text-red-400">
                 {t(errors.password.message as string)}
@@ -203,7 +202,7 @@ export default function ResetPasswordPage() {
               <CheckCircle2 className="absolute right-10 top-1/2 h-4 w-4 -translate-y-1/2 text-green-500" />
             )}
           </div>
-          <div className="min-h-[20px]">
+          <div className="min-h-5">
             {errors.passwordConfirmation && (
               <p className="text-sm text-red-400">
                 {t(errors.passwordConfirmation.message as string)}

@@ -34,7 +34,7 @@ export default function VerifyEmailPage() {
     if (isSuccess) {
       const timer = setTimeout(() => {
         router.push("/auth/login");
-      }, 3000);
+      }, 5000);
 
       return () => clearTimeout(timer);
     }

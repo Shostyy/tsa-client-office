@@ -36,8 +36,13 @@ class ApiClient {
       (error: AxiosError) => {
         if (error.response?.status === 401) {
           const requestUrl = error.config?.url || "";
+          const currentPath = window.location.pathname;
 
-          if (!requestUrl.includes("/login")) {
+          if (
+            !currentPath.startsWith("/auth/") &&
+            !requestUrl.includes("/login") &&
+            !requestUrl.includes("/auth/")
+          ) {
             window.location.href = "/auth/login";
           }
         }
