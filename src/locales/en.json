@@ -4,6 +4,16 @@
     "Dark": "Dark",
     "System": "System"
   },
+  "Common": {
+    "Search": "Search...",
+    "Select": "Select",
+    "SelectAll": "Select All",
+    "CancelSelection": "Cancel Selection",
+    "ResetAll": "Reset All",
+    "ResetSearch": "Reset Search",
+    "Selected": "{{count}} selected",
+    "More": "+{{count}} more"
+  },
   "Auth": {
     "Slogan": "Always there for our customers",
     "Login": "Login",
