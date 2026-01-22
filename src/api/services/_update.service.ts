@@ -1,5 +1,4 @@
 import { apiClient } from "../clients/api-client";
-import { AxiosResponse } from "axios";
 
 export type UpdateEvent<T = unknown> =
   | { type: "connected" }

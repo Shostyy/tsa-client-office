@@ -13,6 +13,7 @@ export interface UpdateSession {
   startedAt: Date;
   completedAt?: Date;
   message?: string;
+  description?: string;
   error?: string;
   seen: boolean;
 }
@@ -20,7 +21,7 @@ export interface UpdateSession {
 interface UpdatesStore {
   sessions: UpdateSession[];
 
-  startUpdate: (type: string) => string;
+  startUpdate: (type: string, description?: string) => string;
   setInProgress: (id: string, message?: string) => void;
   completeUpdate: (id: string, message?: string) => void;
   failUpdate: (id: string, error: string) => void;
@@ -38,13 +39,14 @@ export const useUpdatesStore = create<UpdatesStore>()(
     (set, get) => ({
       sessions: [],
 
-      startUpdate: (type) => {
+      startUpdate: (type, description) => {
         const id = `${type}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
         const newSession: UpdateSession = {
           id,
           type,
           status: "pending",
           startedAt: new Date(),
+          description,
           seen: false,
         };
 

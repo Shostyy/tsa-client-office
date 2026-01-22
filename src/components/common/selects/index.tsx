@@ -1,16 +1,12 @@
 import { useState } from "react";
 import VirtualizedMultiSelect from "./multi-selects/multi-select";
-import { TradePoint, tradePoints } from "./trade-points";
+import { tradePoints } from "./trade-points";
 import VirtualizedSingleSelect from "../select/select";
 
-const tradePointsFixes = tradePoints.sort(
-  (a, b) => b.name.length - a.name.length,
-);
-
 const TradePointsSelect = () => {
-  const [selectedTradePointIds, setSelectedTradePointIds] = useState<number[]>(
-    [],
-  );
+  const [selectedTradePointIds, setSelectedTradePointIds] = useState<
+    number[] | null
+  >([]);
 
   const [selectedTradePointId, setSelectedTradePointId] = useState<
     number | null
@@ -18,11 +14,11 @@ const TradePointsSelect = () => {
 
   console.log(selectedTradePointId);
 
-  const handleSelectTradePoints = (tradePointIds: number[]) => {
+  const handleSelectTradePoints = (tradePointIds: number[] | null) => {
     setSelectedTradePointIds(tradePointIds);
   };
 
-  const handleSelectTradePoint = (tradePointId: number) => {
+  const handleSelectTradePoint = (tradePointId: number | null) => {
     setSelectedTradePointId(tradePointId);
   };
 

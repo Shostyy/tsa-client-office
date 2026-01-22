@@ -19,13 +19,14 @@ export function useSSEUpdate<
     initializeUpdate: () => Promise<void>;
   },
   queryKey: string[],
+  description?: string,
 ) {
   const queryClient = useQueryClient();
   const { startUpdate, setInProgress, completeUpdate, failUpdate } =
     useUpdatesStore();
 
   const initiateUpdate = async () => {
-    const sessionId = startUpdate(updateType);
+    const sessionId = startUpdate(updateType, description);
 
     try {
       const unsubscribe = service.subscribeToUpdates(

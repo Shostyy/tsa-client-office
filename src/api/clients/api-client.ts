@@ -101,12 +101,6 @@ class ApiClient {
     return this.client.delete<TResponse>(url, config);
   }
 
-  /**
-   * Subscribe to Server-Sent Events
-   * @param url - The SSE endpoint URL (can be relative or absolute)
-   * @param options - SSE configuration options
-   * @returns Cleanup function to close the connection
-   */
   subscribeToSSE<T>(url: string, options: SSEOptions<T>): () => void {
     const { onMessage, onError, onOpen, withCredentials = true } = options;
 
@@ -114,52 +108,40 @@ class ApiClient {
       ? url
       : `${this.baseURL}${url.startsWith("/") ? url : `/${url}`}`;
 
-    const eventSource = withCredentials
-      ? new EventSource(fullUrl, { withCredentials: true })
-      : new EventSource(fullUrl);
+    const eventSource = new EventSource(fullUrl, { withCredentials });
 
-    eventSource.onopen = () => {
-      console.log(`SSE connection opened: ${url}`);
-      onOpen?.();
-    };
-
-    eventSource.addEventListener("update", (event) => {
-      console.log("📨 Received update event:", event.data);
+    const processEvent = (event: MessageEvent) => {
       try {
-        const data = JSON.parse(event.data) as T;
-        onMessage(data);
-      } catch (error) {
-        console.log("⚠️ Non-JSON update message:", event.data);
+        const parsedData = JSON.parse(event.data) as T;
+        onMessage(parsedData);
+      } catch {
+        const rawData = event.data as unknown;
 
-        if (typeof event.data === "string") {
-          onMessage(event.data as any);
+        if (this.isTypeT<T>(rawData)) {
+          onMessage(rawData);
         } else {
-          console.error("Failed to parse SSE update event:", error);
-          onError?.(new Error("Failed to parse server update message"));
+          onError?.(
+            new Error("Received data format does not match expected type"),
+          );
         }
       }
-    });
+    };
 
-    eventSource.onmessage = (event) => {
-      console.log("📨 Received default message:", event.data);
-      try {
-        const data = JSON.parse(event.data) as T;
-        onMessage(data);
-      } catch (error) {
-        console.error("Failed to parse SSE message:", error);
-        onError?.(new Error("Failed to parse server message"));
+    eventSource.onopen = () => onOpen?.();
+    eventSource.onmessage = processEvent;
+    eventSource.addEventListener("update", processEvent);
+
+    eventSource.onerror = () => {
+      if (eventSource.readyState === EventSource.CLOSED) {
+        onError?.(new Error("SSE connection failed"));
       }
     };
 
-    eventSource.onerror = (error) => {
-      console.error(`SSE connection error: ${url}`, error);
-      onError?.(new Error("SSE connection failed"));
-    };
+    return () => eventSource.close();
+  }
 
-    return () => {
-      console.log(`SSE connection closed: ${url}`);
-      eventSource.close();
-    };
+  private isTypeT<T>(data: unknown): data is T {
+    return typeof data !== "undefined";
   }
 
   setContentType(contentType: ContentType): void {

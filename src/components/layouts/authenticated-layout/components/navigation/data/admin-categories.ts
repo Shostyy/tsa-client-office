@@ -11,7 +11,6 @@ import {
   Coffee,
   DollarSign,
   Package,
-  Wrench,
   Box,
   UtensilsCrossed,
   ShoppingBag,
